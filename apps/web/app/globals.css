@@ -1,1 +1,81 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-border: var(--border);
+  --color-border-hi: var(--border-hi);
+  --color-tx1: var(--tx1);
+  --color-tx2: var(--tx2);
+  --color-tx3: var(--tx3);
+  --color-accent: var(--accent);
+  --color-accent-h: var(--accent-h);
+  --color-accent-s: var(--accent-s);
+  --color-cta-bg: var(--cta-bg);
+  --color-cta-text: var(--cta-text);
+  --color-cta-hover: var(--cta-hover);
+  --color-red: var(--red);
+}
+
+/* Dark is the default theme (CLAUDE.md). */
+:root,
+[data-theme='dark'] {
+  --bg: #1e1d1a;
+  --surface: #26241f;
+  --elevated: #2c2a24;
+  --border: #3a3730;
+  --border-hi: #4a4640;
+  --tx1: #f0ede6;
+  --tx2: #b0ab9e;
+  --tx3: #7d786c;
+  --accent: #f0ede6;
+  --accent-h: #ffffff;
+  --accent-s: #33312b;
+  --cta-bg: #e8c5a8;
+  --cta-text: #3a2818;
+  --cta-hover: #debb9a;
+  --red: #ef4444;
+  --focus-ring: rgba(232, 197, 168, 0.5);
+  --texture-line: rgba(240, 237, 230, 0.025);
+}
+
+[data-theme='light'] {
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --elevated: #faf9f7;
+  --border: #e8e5df;
+  --border-hi: #d4d0c8;
+  --tx1: #37352f;
+  --tx2: #6b6b6b;
+  --tx3: #9b9b9b;
+  --accent: #37352f;
+  --accent-h: #2a2825;
+  --accent-s: #f0eeea;
+  --cta-bg: #e8c5a8;
+  --cta-text: #5c3d1e;
+  --cta-hover: #debb9a;
+  --red: #dc2626;
+  --focus-ring: rgba(196, 168, 130, 0.55);
+  --texture-line: rgba(55, 53, 47, 0.02);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--tx1);
+  font-family: var(--font-sans);
+  background-image:
+    linear-gradient(to right, var(--texture-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--texture-line) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
