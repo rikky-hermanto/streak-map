@@ -40,6 +40,20 @@ export async function updateHabit(
   await db.habits.update(id, { ...patch, updatedAt: new Date().toISOString() });
 }
 
+/**
+ * Persist a new habit ordering. `orderedIds` is the full list of visible habit ids in their
+ * new display order; each gets its index as `order`. Written in one transaction so a partial
+ * write can never leave two habits sharing an order value.
+ */
+export async function reorderHabits(db: StreakMapDB, orderedIds: string[]): Promise<void> {
+  const now = new Date().toISOString();
+  await db.transaction('rw', db.habits, async () => {
+    await Promise.all(
+      orderedIds.map((id, index) => db.habits.update(id, { order: index, updatedAt: now })),
+    );
+  });
+}
+
 export async function archiveHabit(db: StreakMapDB, id: string): Promise<void> {
   const now = new Date().toISOString();
   await db.habits.update(id, { archivedAt: now, updatedAt: now });
