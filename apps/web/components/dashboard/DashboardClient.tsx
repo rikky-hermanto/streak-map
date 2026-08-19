@@ -1,17 +1,21 @@
 'use client';
 
 import { dateFromDateKey, todayKey } from '@streak-map/core';
-import { getCheckInsForHabitInRange, listHabits } from '@streak-map/store';
+import { checkIn, getCheckInsForHabitInRange, listHabits } from '@streak-map/store';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { HabitCard } from '@/components/habit/HabitCard';
 import { HabitEditorModal } from '@/components/habit/HabitEditorModal';
+import { ShortcutsOverlay } from '@/components/shortcuts/ShortcutsOverlay';
 import { db } from '@/lib/db';
+import { useKeyboardShortcut } from '@/lib/useKeyboardShortcut';
 import { DashboardHeader } from './DashboardHeader';
 import { EmptyState } from './EmptyState';
 
 export function DashboardClient() {
   const [editorOpen, setEditorOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const habits = useLiveQuery(() => listHabits(db), []);
   const yearStart = `${dateFromDateKey(todayKey()).getFullYear()}-01-01`;
 
@@ -25,6 +29,47 @@ export function DashboardClient() {
       0,
     );
   }, [habits]);
+
+  const anyDialogOpen = editorOpen || shortcutsOpen;
+
+  useKeyboardShortcut(
+    'j',
+    () => {
+      if (!habits || habits.length === 0) return;
+      setFocusedIndex((i) => Math.min(habits.length - 1, i + 1));
+    },
+    { enabled: !anyDialogOpen },
+  );
+
+  useKeyboardShortcut(
+    'k',
+    () => {
+      setFocusedIndex((i) => Math.max(0, i - 1));
+    },
+    { enabled: !anyDialogOpen },
+  );
+
+  useKeyboardShortcut(
+    'c',
+    () => {
+      const habit = habits?.[focusedIndex];
+      if (habit) checkIn(db, habit.id, todayKey());
+    },
+    { enabled: !anyDialogOpen },
+  );
+
+  useKeyboardShortcut(
+    ' ',
+    () => {
+      const habit = habits?.[focusedIndex];
+      if (habit) checkIn(db, habit.id, todayKey());
+    },
+    { enabled: !anyDialogOpen },
+  );
+
+  useKeyboardShortcut('n', () => setEditorOpen(true), { enabled: !anyDialogOpen });
+  useKeyboardShortcut('?', () => setShortcutsOpen((v) => !v), { enabled: !editorOpen });
+  useKeyboardShortcut('Escape', () => setShortcutsOpen(false), { enabled: shortcutsOpen });
 
   if (habits === undefined) return null;
 
@@ -40,8 +85,15 @@ export function DashboardClient() {
         <section>
           <h2 className="mb-4 text-[13px] font-medium text-tx2">Habits</h2>
           <div className="flex flex-col gap-4">
-            {habits.map((habit) => (
-              <HabitCard key={habit.id} habit={habit} />
+            {habits.map((habit, i) => (
+              <div
+                key={habit.id}
+                className={
+                  i === focusedIndex ? 'rounded-xl shadow-[inset_0_0_0_1.5px_var(--tx2)]' : ''
+                }
+              >
+                <HabitCard habit={habit} />
+              </div>
             ))}
           </div>
         </section>
@@ -56,6 +108,7 @@ export function DashboardClient() {
       </button>
 
       {editorOpen && <HabitEditorModal mode="create" onClose={() => setEditorOpen(false)} />}
+      <ShortcutsOverlay open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </main>
   );
 }

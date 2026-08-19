@@ -10,6 +10,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Stepper } from '@/components/ui/Stepper';
 import { ACCENT_SWATCHES, DEFAULT_HABIT_COLOR } from '@/lib/colors';
 import { db } from '@/lib/db';
+import { useKeyboardShortcut } from '@/lib/useKeyboardShortcut';
 
 interface HabitEditorModalProps {
   mode: 'create' | 'edit';
@@ -24,6 +25,8 @@ export function HabitEditorModal({ mode, habit, onClose }: HabitEditorModalProps
   const [interval, setInterval_] = useState<'daily' | 'weekly'>(habit?.interval ?? 'daily');
   const [target, setTarget] = useState(habit?.target ?? 1);
   const [color, setColor] = useState(habit?.color ?? DEFAULT_HABIT_COLOR);
+
+  useKeyboardShortcut('Escape', onClose);
 
   const handleSave = async () => {
     const trimmed = name.trim();
