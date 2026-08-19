@@ -2,16 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Start here:** [docs/KNOWLEDGE-GRAPH.md](docs/KNOWLEDGE-GRAPH.md) — a dense map of every package,
+entity, exported function, invariant, and known spec/code gap, plus a task→file routing table.
+Read it before exploring the tree; it is written to replace a discovery sweep. This file holds the
+working agreements; [docs/features/streak-map-spec.md](docs/features/streak-map-spec.md) is the
+source of truth for the data model, the brightness algorithm, and the build order.
+
 ## Project status
 
-Pre-implementation. The repo currently contains only `README.md`, `LICENSE`, `.gitignore`, and
-[docs/features/streak-map-spec.md](docs/features/streak-map-spec.md) — the approved MVP v1 spec.
-**Read the spec before writing code**; it is the source of truth for the data model, the brightness
-algorithm, and the build order. No source tree, package manifests, or lockfile exist yet, so the
-commands below describe the intended toolchain rather than something already wired up. Update this
-file as each piece lands.
+All three workspaces are merged to `main` and CI-green: `packages/core` (types, dates, streaks,
+brightness — zero runtime deps), `packages/store` (Dexie v1 schema + repository fns), and
+`apps/web` (Next.js App Router UI: dashboard, habit detail, settings, keyboard shortcuts,
+export/import).
 
-## Commands (target toolchain: pnpm workspaces + Turborepo)
+Remaining for v1: the **aggregate "all habits" grid** (spec F3 / §4.2) — `aggregateLevels` in core
+and `getAggregateTotalsInRange` in store are both implemented and tested, but nothing in the UI
+consumes them yet. Then README with a GIF, deploy, and seed issues. Other known spec/code drift is
+catalogued in §7 of the knowledge graph.
+
+## Commands (pnpm workspaces + Turborepo)
 
 ```bash
 pnpm install            # bootstrap
@@ -33,8 +42,10 @@ typecheck → test → build → the **core purity check** (see below).
 Three layers, deliberately separated because the roadmap adds a CLI (v1.1) and an Expo/RN iOS app (v2):
 
 - `packages/core` — pure TypeScript domain logic: `types.ts`, `dates.ts`, `streaks.ts`,
-  `brightness.ts`, `schema.ts` (Zod). **Zero runtime dependencies, no React, no Dexie.** CI asserts
-  `packages/core/package.json` has no `dependencies`. Breaking this forces each platform to
+  `brightness.ts`. **Zero runtime dependencies, no React, no Dexie.** (The Zod export/import schema
+  lives in `apps/web/lib/schema.ts`, not here — Zod is a runtime dep and core must stay pure. A
+  future CLI needing validation forces this into its own package; see knowledge graph §7 `G2`.)
+  CI asserts `packages/core/package.json` has no `dependencies`. Breaking this forces each platform to
   reimplement streak math, which is how two clients start disagreeing about the same streak.
 - `packages/store` — persistence adapters. v1 is Dexie/IndexedDB; the compound index
   `[habitId+date]` is what the whole app leans on and it enforces one row per (habit, day).
