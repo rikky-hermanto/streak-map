@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import 'fake-indexeddb/auto';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { HabitEditorModal } from './HabitEditorModal';
 
@@ -9,11 +10,13 @@ vi.mock('@/lib/db', async () => {
 
 describe('HabitEditorModal — create mode', () => {
   it('does not call onClose-triggering save when name is empty (silently cancels)', async () => {
+    const { db } = await import('@/lib/db');
     const onClose = vi.fn();
     render(<HabitEditorModal mode="create" onClose={onClose} />);
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     // Empty name silently cancels: the modal still closes (no error UI), but no habit is created.
-    expect(onClose).toHaveBeenCalled();
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(await db.habits.count()).toBe(0);
   });
 
   it('defaults the accent color to DEFAULT_HABIT_COLOR, selecting none of the offered swatches', () => {
