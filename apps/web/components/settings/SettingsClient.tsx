@@ -80,13 +80,17 @@ export function SettingsClient() {
             <Button variant="secondary" onClick={handleExport}>
               Export data (JSON)
             </Button>
-            <label className="focus-ring cursor-pointer rounded-2xl border border-border bg-elevated px-4 py-2.5 text-[13px] text-tx1 hover:border-border-hi">
+            <label
+              htmlFor="import-file-input"
+              className="cursor-pointer rounded-2xl border border-border bg-elevated px-4 py-2.5 text-[13px] text-tx1 hover:border-border-hi focus-within:[box-shadow:0_0_0_3px_var(--focus-ring)]"
+            >
               Import data (JSON)
               <input
                 ref={fileInputRef}
+                id="import-file-input"
                 type="file"
                 accept="application/json"
-                className="hidden"
+                className="sr-only"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) handleImportFile(file);
