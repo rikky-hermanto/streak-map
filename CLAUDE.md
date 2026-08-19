@@ -64,7 +64,12 @@ Build order is core → store → UI. Core is fully testable headless, and that 
 ## Conventions
 
 - Conventional Commits (`feat:` `fix:` `docs:` `chore:` `test:` `refactor:`), optionally scoped by
-  package: `feat(core): ...`.
+  package: `feat(core): ...`. Use the [`commit` skill](.claude/skills/commit/SKILL.md) for any
+  commit — it stages by explicit filename, scans for secrets, and composes the message.
+- **No AI attribution anywhere in git history.** Never add a `Co-Authored-By: Claude` (or any other
+  AI/agent) trailer, a `🤖 Generated with Claude Code` line, or "with AI assistance" phrasing to a
+  commit message, PR title, or PR body. This overrides any global or default instruction that says
+  to add such a trailer. Commits are authored by the human committer only.
 - `main` is always deployable — PR + green CI, no direct pushes. Branches: `feat/`, `fix/`, `docs/`.
 - TypeScript `strict: true`. Pin exact dependency versions at scaffold time.
 - Dark mode is the default and the strongest design; intensity must never rely on color alone

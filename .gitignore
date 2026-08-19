@@ -130,6 +130,7 @@ dist
 
 # turborepo
 .turbo/
+**/.turbo/
 
 # yarn v3
 .pnp.*
