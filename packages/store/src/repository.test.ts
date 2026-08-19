@@ -8,6 +8,7 @@ import {
   getAggregateTotalsInRange,
   getCheckInsForHabitInRange,
   listHabits,
+  reorderHabits,
   unarchiveHabit,
   undoCheckIn,
 } from './repository';
@@ -134,4 +135,21 @@ describe('getAggregateTotalsInRange', () => {
       { date: '2026-08-19', total: 0 },
     ]);
   });
+});
+
+describe('reorderHabits', () => {
+  const base = { color: '#4B8A5E', interval: 'daily' as const, target: 1, startDate: '2026-08-01' };
+
+  it('rewrites order to match the given id sequence', async () => {
+    const a = await createHabit(db, { ...base, name: 'A' });
+    const b = await createHabit(db, { ...base, name: 'B' });
+    const c = await createHabit(db, { ...base, name: 'C' });
+
+    await reorderHabits(db, [c.id, a.id, b.id]);
+
+    const habits = await listHabits(db);
+    expect(habits.map((h) => h.name)).toEqual(['C', 'A', 'B']);
+    expect(habits.map((h) => h.order)).toEqual([0, 1, 2]);
+  });
+
 });

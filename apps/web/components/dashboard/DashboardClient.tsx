@@ -4,13 +4,13 @@ import { dateFromDateKey, todayKey } from '@streak-map/core';
 import { checkIn, getCheckInsForHabitInRange, listHabits } from '@streak-map/store';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
-import { HabitCard } from '@/components/habit/HabitCard';
 import { HabitEditorModal } from '@/components/habit/HabitEditorModal';
 import { ShortcutsOverlay } from '@/components/shortcuts/ShortcutsOverlay';
 import { db } from '@/lib/db';
 import { useKeyboardShortcut } from '@/lib/useKeyboardShortcut';
 import { DashboardHeader } from './DashboardHeader';
 import { EmptyState } from './EmptyState';
+import { HabitDragList } from './HabitDragList';
 
 export function DashboardClient() {
   const [editorOpen, setEditorOpen] = useState(false);
@@ -74,7 +74,7 @@ export function DashboardClient() {
   if (habits === undefined) return null;
 
   return (
-    <main className="mx-auto max-w-[1040px] px-6 pt-[6vh] pb-[140px]">
+    <main className="mx-auto w-full px-6 pt-[6vh] pb-[140px] 2xl:px-10">
       <DashboardHeader
         checkInsThisYear={checkInsThisYear ?? 0}
         year={dateFromDateKey(todayKey()).getFullYear()}
@@ -84,18 +84,7 @@ export function DashboardClient() {
       ) : (
         <section>
           <h2 className="mb-4 text-[13px] font-medium text-tx2">Habits</h2>
-          <div className="flex flex-col gap-4">
-            {habits.map((habit, i) => (
-              <div
-                key={habit.id}
-                className={
-                  i === focusedIndex ? 'rounded-xl shadow-[inset_0_0_0_1.5px_var(--tx2)]' : ''
-                }
-              >
-                <HabitCard habit={habit} />
-              </div>
-            ))}
-          </div>
+          <HabitDragList focusedIndex={focusedIndex} habits={habits} />
         </section>
       )}
 
