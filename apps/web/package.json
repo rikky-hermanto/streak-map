@@ -1,0 +1,36 @@
+{
+  "name": "@streak-map/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@streak-map/core": "workspace:*",
+    "@streak-map/store": "workspace:*",
+    "@tailwindcss/postcss": "4.3.3",
+    "dexie-react-hooks": "4.4.0",
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwindcss": "4.3.3",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "fake-indexeddb": "6.2.5",
+    "jsdom": "29.1.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}
