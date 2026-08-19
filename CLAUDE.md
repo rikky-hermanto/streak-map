@@ -21,8 +21,8 @@ pnpm typecheck          # tsc --noEmit across the workspace
 pnpm test               # vitest, all packages
 pnpm biome ci .         # lint + format check (Biome replaces ESLint + Prettier)
 
-pnpm --filter @streak-map/core test -- streaks          # single test file
-pnpm --filter @streak-map/core test -- -t "grace rule"  # single test by name
+pnpm --filter @streak-map/core test streaks          # single test file
+pnpm --filter @streak-map/core test -t "grace rule"  # single test by name
 ```
 
 CI (`.github/workflows/ci.yml`) runs, all blocking: frozen-lockfile install → `biome ci` →
