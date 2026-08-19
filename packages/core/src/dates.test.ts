@@ -19,10 +19,13 @@ describe('dateKeyFromDate', () => {
 describe('todayKey', () => {
   it('derives the key from local date fields, not UTC, regardless of TZ', () => {
     const originalTz = process.env.TZ;
-    process.env.TZ = 'Pacific/Kiritimati'; // UTC+14 — maximizes chance of catching UTC drift
+    process.env.TZ = 'Pacific/Kiritimati'; // UTC+14
     try {
-      // A fixed local wall-clock moment: Aug 19, 2026, 23:30 local time.
-      const localMoment = new Date(2026, 7, 19, 23, 30);
+      // A fixed local wall-clock moment: Aug 19, 2026, 00:30 local time.
+      // In UTC+14, this is 2026-08-18 10:30 UTC — the *previous* day.
+      // Correct local-based extraction returns 2026-08-19 (local date of construction).
+      // Buggy UTC-based extraction would incorrectly return 2026-08-18.
+      const localMoment = new Date(2026, 7, 19, 0, 30);
       expect(todayKey(localMoment)).toBe('2026-08-19');
     } finally {
       process.env.TZ = originalTz;
