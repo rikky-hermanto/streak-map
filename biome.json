@@ -14,7 +14,8 @@
       "!**/dist",
       "!**/node_modules",
       "!**/.turbo",
-      "!**/.claude"
+      "!**/.claude",
+      "!**/next-env.d.ts"
     ]
   },
   "formatter": {
@@ -33,6 +34,11 @@
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "assist": {

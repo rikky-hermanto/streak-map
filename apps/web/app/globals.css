@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
   --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
@@ -23,7 +23,7 @@
 
 /* Dark is the default theme (CLAUDE.md). */
 :root,
-[data-theme='dark'] {
+[data-theme="dark"] {
   --bg: #1e1d1a;
   --surface: #26241f;
   --elevated: #2c2a24;
@@ -43,7 +43,7 @@
   --texture-line: rgba(240, 237, 230, 0.025);
 }
 
-[data-theme='light'] {
+[data-theme="light"] {
   --bg: #f5f3ee;
   --surface: #ffffff;
   --elevated: #faf9f7;
@@ -77,5 +77,12 @@ body {
   outline: none;
 }
 .focus-ring:focus-visible {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.focus-ring-within {
+  outline: none;
+}
+.focus-ring-within:has(:focus-visible) {
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
