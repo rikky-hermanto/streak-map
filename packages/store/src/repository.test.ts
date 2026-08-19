@@ -151,5 +151,4 @@ describe('reorderHabits', () => {
     expect(habits.map((h) => h.name)).toEqual(['C', 'A', 'B']);
     expect(habits.map((h) => h.order)).toEqual([0, 1, 2]);
   });
-
 });
