@@ -104,6 +104,7 @@ describe('computeStreakStats — completionRate', () => {
       '2026-08-04', // 4 elapsed daily intervals, 2 satisfied
     );
     expect(stats.completionRate).toBeCloseTo(0.5);
+    expect(stats.currentStreak).toBe(0); // Aug3 unsat breaks the streak; only Aug4 is dropped by grace rule
   });
 
   it('is 0, not NaN, for a habit with zero elapsed history', () => {
