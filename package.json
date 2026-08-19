@@ -1,0 +1,18 @@
+{
+  "name": "streak-map",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "biome": "biome",
+    "check:core-purity": "node scripts/check-core-purity.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.9",
+    "turbo": "2.10.11"
+  }
+}
