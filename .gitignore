@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Claude Code personal overrides
 .claude/settings.local.json
+
+# git worktrees (isolated workspaces for in-progress plans)
+.worktrees/
