@@ -1,6 +1,6 @@
 'use client';
 
-import { todayKey } from '@streak-map/core';
+import { dateFromDateKey, todayKey } from '@streak-map/core';
 import { getCheckInsForHabitInRange, listHabits } from '@streak-map/store';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
@@ -9,7 +9,7 @@ import { EmptyState } from './EmptyState';
 
 export function DashboardClient() {
   const habits = useLiveQuery(() => listHabits(db), []);
-  const yearStart = `${new Date(todayKey()).getFullYear()}-01-01`;
+  const yearStart = `${dateFromDateKey(todayKey()).getFullYear()}-01-01`;
 
   const checkInsThisYear = useLiveQuery(async () => {
     const list = await listHabits(db);
@@ -32,7 +32,7 @@ export function DashboardClient() {
     <main className="mx-auto max-w-[1040px] px-6 pt-[6vh] pb-[140px]">
       <DashboardHeader
         checkInsThisYear={checkInsThisYear ?? 0}
-        year={new Date(todayKey()).getFullYear()}
+        year={dateFromDateKey(todayKey()).getFullYear()}
       />
       {habits.length === 0 ? (
         <EmptyState onCreateHabit={handleCreateHabit} />
