@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -15,16 +15,22 @@ export function useKeyboardShortcut(
 ): void {
   const { enabled = true } = options;
 
+  const handlerRef = useRef(handler);
+  useEffect(() => {
+    handlerRef.current = handler;
+  }, [handler]);
+
   useEffect(() => {
     if (!enabled) return;
 
     const listener = (e: KeyboardEvent) => {
       if (e.isComposing || isTypingTarget(e.target)) return;
       if (e.key.toLowerCase() !== key.toLowerCase()) return;
-      handler(e);
+      e.preventDefault();
+      handlerRef.current(e);
     };
 
     window.addEventListener('keydown', listener);
     return () => window.removeEventListener('keydown', listener);
-  }, [key, handler, enabled]);
+  }, [key, enabled]);
 }

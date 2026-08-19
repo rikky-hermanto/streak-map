@@ -58,4 +58,45 @@ describe('useKeyboardShortcut', () => {
 
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it('calls preventDefault on a Space keydown targeting a focused button, so the browser does not also fire a native click activation (avoiding a double check-in)', () => {
+    const handler = vi.fn();
+    function ButtonHarness() {
+      useKeyboardShortcut(' ', handler);
+      return <button type="button">Check in</button>;
+    }
+    const { getByRole } = render(<ButtonHarness />);
+    const button = getByRole('button');
+    button.focus();
+
+    const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+    button.dispatchEvent(event);
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('re-registers the listener when the key changes but not merely because the handler identity changes across re-renders', () => {
+    const addSpy = vi.spyOn(window, 'addEventListener');
+    let renderCount = 0;
+    function ChurnHarness() {
+      renderCount += 1;
+      // Fresh inline arrow every render, as real call sites do.
+      useKeyboardShortcut('n', () => {});
+      return null;
+    }
+    const { rerender } = render(<ChurnHarness />);
+    const addCallsAfterMount = addSpy.mock.calls.filter((c) => c[0] === 'keydown').length;
+
+    rerender(<ChurnHarness />);
+    rerender(<ChurnHarness />);
+    const addCallsAfterRerenders = addSpy.mock.calls.filter((c) => c[0] === 'keydown').length;
+
+    expect(renderCount).toBe(3);
+    // The keydown listener must be added exactly once total, not once per render — proves the
+    // effect isn't tearing down and re-adding on every commit despite a fresh handler identity.
+    expect(addCallsAfterRerenders).toBe(addCallsAfterMount);
+
+    addSpy.mockRestore();
+  });
 });
