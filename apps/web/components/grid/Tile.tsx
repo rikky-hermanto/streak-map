@@ -18,7 +18,7 @@ export function Tile({ date, count: _count, level, color, isToday, label }: Tile
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div
         data-date={date}
         role="img"
@@ -26,7 +26,7 @@ export function Tile({ date, count: _count, level, color, isToday, label }: Tile
         tabIndex={-1}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="h-[11px] w-[11px] rounded-[3px]"
+        className="aspect-square w-full rounded-[3px]"
         style={{
           backgroundColor: level === 0 ? 'var(--elevated)' : color,
           opacity: level === 0 ? 1 : LEVEL_OPACITY[level],
