@@ -55,34 +55,30 @@ export function ContributionGrid({
 
   return (
     <div>
-      <div className="overflow-x-auto">
-        <div className="min-w-[800px]">
-          <MonthLabels weekStartKeys={weekStartKeys} />
-          <div className="flex gap-[3px]">
-            <WeekdayLabels />
-            {columns.map((week, weekIndex) => (
-              <div key={weekStartKeys[weekIndex]} className="flex flex-col gap-[3px]">
-                {week.map((date) => {
-                  const inWindow = date >= firstDay && date <= today;
-                  if (!inWindow) return <div key={date} className="h-[11px] w-[11px]" />;
-                  const count = counts[date] ?? 0;
-                  const level = perHabitLevel(count, target);
-                  return (
-                    <Tile
-                      key={date}
-                      date={date}
-                      count={count}
-                      level={level}
-                      color={color}
-                      isToday={date === today}
-                      label={tileLabel(date, count)}
-                    />
-                  );
-                })}
-              </div>
-            ))}
+      <MonthLabels weekStartKeys={weekStartKeys} />
+      <div className="flex gap-[3px]">
+        <WeekdayLabels />
+        {columns.map((week, weekIndex) => (
+          <div key={weekStartKeys[weekIndex]} className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            {week.map((date) => {
+              const inWindow = date >= firstDay && date <= today;
+              if (!inWindow) return <div key={date} className="aspect-square w-full" />;
+              const count = counts[date] ?? 0;
+              const level = perHabitLevel(count, target);
+              return (
+                <Tile
+                  key={date}
+                  date={date}
+                  count={count}
+                  level={level}
+                  color={color}
+                  isToday={date === today}
+                  label={tileLabel(date, count)}
+                />
+              );
+            })}
           </div>
-        </div>
+        ))}
       </div>
       <Legend color={color} />
     </div>

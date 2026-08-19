@@ -30,7 +30,7 @@ export function MonthLabels({ weekStartKeys }: MonthLabelsProps) {
         return (
           <div
             key={key}
-            className="w-[11px] shrink-0 overflow-visible whitespace-nowrap font-mono text-[10px] text-tx3"
+            className="min-w-0 flex-1 overflow-visible whitespace-nowrap font-mono text-[10px] text-tx3"
           >
             {showLabel ? MONTH_NAMES[month] : ''}
           </div>
