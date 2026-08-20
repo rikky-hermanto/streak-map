@@ -41,6 +41,16 @@
   --red: #ef4444;
   --focus-ring: rgba(232, 197, 168, 0.5);
   --texture-line: rgba(240, 237, 230, 0.025);
+  /* GitHub contribution-graph greens (dark). */
+  --lvl-1: #0e4429;
+  --lvl-2: #006d32;
+  --lvl-3: #26a641;
+  --lvl-4: #39d353;
+  /* ...and the lightness steps behind them, for non-green habit colors. */
+  --lvl-l-1: 16%;
+  --lvl-l-2: 21%;
+  --lvl-l-3: 40%;
+  --lvl-l-4: 52%;
 }
 
 [data-theme="light"] {
@@ -61,6 +71,15 @@
   --red: #dc2626;
   --focus-ring: rgba(196, 168, 130, 0.55);
   --texture-line: rgba(55, 53, 47, 0.02);
+  /* GitHub contribution-graph greens (light). */
+  --lvl-1: #9be9a8;
+  --lvl-2: #40c463;
+  --lvl-3: #30a14e;
+  --lvl-4: #216e39;
+  --lvl-l-1: 76%;
+  --lvl-l-2: 51%;
+  --lvl-l-3: 41%;
+  --lvl-l-4: 28%;
 }
 
 body {

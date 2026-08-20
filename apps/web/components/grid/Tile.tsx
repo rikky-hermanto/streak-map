@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { Tooltip } from '@/components/ui/Tooltip';
-
-const LEVEL_OPACITY: Record<number, number> = { 1: 0.32, 2: 0.56, 3: 0.8, 4: 1.0 };
+import { tileFill } from '@/lib/colors';
 
 interface TileProps {
   date: string;
@@ -16,6 +15,7 @@ interface TileProps {
 
 export function Tile({ date, count: _count, level, color, isToday, label }: TileProps) {
   const [hovered, setHovered] = useState(false);
+  const fill = tileFill(color, level);
 
   return (
     <div className="relative w-full">
@@ -28,8 +28,7 @@ export function Tile({ date, count: _count, level, color, isToday, label }: Tile
         onMouseLeave={() => setHovered(false)}
         className="aspect-square w-full rounded-[3px]"
         style={{
-          backgroundColor: level === 0 ? 'var(--elevated)' : color,
-          opacity: level === 0 ? 1 : LEVEL_OPACITY[level],
+          ...fill,
           boxShadow:
             [isToday ? 'inset 0 0 0 1.5px var(--tx1)' : '', hovered ? '0 0 0 1.5px var(--tx3)' : '']
               .filter(Boolean)
