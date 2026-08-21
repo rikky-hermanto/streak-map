@@ -156,7 +156,7 @@ before paint (no theme flash) and wires the Work Sans / IBM Plex Mono font varia
 | `HabitDetailClient` | [habit/HabitDetailClient.tsx](../apps/web/components/habit/HabitDetailClient.tsx) | Full-year grid, 6-row stat panel, archive toggle, habit switcher chips. |
 | `HabitEditorModal` | [habit/HabitEditorModal.tsx](../apps/web/components/habit/HabitEditorModal.tsx) | Create/edit form; also the delete affordance. `Esc` closes. |
 | `SettingsClient` | [settings/SettingsClient.tsx](../apps/web/components/settings/SettingsClient.tsx) | Export/import, theme toggle, shortcut reference, about. |
-| `ContributionGrid` | [grid/ContributionGrid.tsx](../apps/web/components/grid/ContributionGrid.tsx) | No `'use client'` — builds Monday-anchored week columns and calls `perHabitLevel`. |
+| `ContributionGrid` | [grid/ContributionGrid.tsx](../apps/web/components/grid/ContributionGrid.tsx) | `'use client'` — thin wrapper picking `WideGrid` (wide viewports) vs `CalendarGrid` (narrow, via `useIsNarrow()`) and rendering the shared `Legend`. |
 | `Tile` | [grid/Tile.tsx](../apps/web/components/grid/Tile.tsx) | 11×11px square. `role="img"` + `aria-label` carrying the count; opacity ramp `{1: .32, 2: .56, 3: .8, 4: 1}` over `habit.color`. |
 | `Legend`, `MonthLabels`, `WeekdayLabels` | [components/grid](../apps/web/components/grid) | Grid chrome. |
 | `StatsStrip`, `FieldRowPanel` | [stats](../apps/web/components/stats), [habit](../apps/web/components/habit) | Stat presentation. |
@@ -232,7 +232,8 @@ format.
 ```
 useHabitCheckIns(habitId) → trailingWindowKeys(todayKey(), 365)
   → getCheckInsForHabitInRange(db, id, days[0], today)   [one indexed range scan]
-  → ContributionGrid: enumerateWeekStartKeys → 7×N Monday-anchored columns
+  → ContributionGrid: buildGridWeeks → 7×N Monday-anchored columns (WideGrid or CalendarGrid,
+    clamped to 84-day `MOBILE_WINDOW_DAYS` default on the narrow/CalendarGrid path)
   → per tile: perHabitLevel(count, target) → opacity ramp over habit.color
 ```
 
@@ -293,7 +294,7 @@ is merged into `main`. Ignore them — reading them spends context on duplicates
 | Change the DB shape | [db.ts](../packages/store/src/db.ts) | Bump `version(n)` with an `upgrade()`; bump `EXPORT_SCHEMA_VERSION` too if the export changes |
 | Change export/import | [lib/schema.ts](../apps/web/lib/schema.ts) and [SettingsClient](../apps/web/components/settings/SettingsClient.tsx) | `I-UNTRUSTED`, and the round-trip success criterion |
 | Add a keyboard shortcut | [useKeyboardShortcut.ts](../apps/web/lib/useKeyboardShortcut.ts), `DashboardClient`, `ShortcutsOverlay`, and the `SHORTCUTS` list in `SettingsClient` | Four places — keep them in sync |
-| Change grid rendering | [ContributionGrid.tsx](../apps/web/components/grid/ContributionGrid.tsx) and [Tile.tsx](../apps/web/components/grid/Tile.tsx) | `I-A11Y` |
+| Change grid rendering | [WideGrid.tsx](../apps/web/components/grid/WideGrid.tsx) (wide/horizontal), [CalendarGrid.tsx](../apps/web/components/grid/CalendarGrid.tsx) (narrow/vertical), [weeks.ts](../apps/web/components/grid/weeks.ts) (shared week bucketing), [labels.ts](../apps/web/components/grid/labels.ts) (shared label formatting), [Tile.tsx](../apps/web/components/grid/Tile.tsx) (shared per-day tile) | `I-A11Y` |
 | Change colors or theming | [globals.css](../apps/web/app/globals.css), [lib/colors.ts](../apps/web/lib/colors.ts), and the layout's theme-init script | Dark is the default |
 | Add a dependency to core | **Don't.** | `I-PURITY` — CI fails the build |
 | Decide whether something is in v1 scope | [spec §2](features/streak-map-spec.md) | Or dispatch the `spec-checker` agent |

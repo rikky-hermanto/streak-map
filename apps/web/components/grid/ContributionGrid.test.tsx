@@ -109,4 +109,10 @@ describe('ContributionGrid layout switching', () => {
     expect(screen.getByText('Less')).toBeInTheDocument();
     expect(screen.getByText('More')).toBeInTheDocument();
   });
+
+  it('shows the range control at the production default (no windowDays override) on a narrow viewport', () => {
+    stubNarrow(true);
+    render(<ContributionGrid counts={{}} target={1} color="#4B8A5E" />);
+    expect(screen.getByRole('button', { name: '12 weeks' })).toBeInTheDocument();
+  });
 });

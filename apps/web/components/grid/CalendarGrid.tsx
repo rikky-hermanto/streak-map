@@ -79,14 +79,15 @@ export function CalendarGrid({ counts, target, color, windowDays, today }: GridL
         );
       })}
       {ranges.length > 1 && (
-        <div className="mt-3 flex gap-1.5">
+        // biome-ignore lint/a11y/useSemanticElements: a toggle-button group, not a form control set — fieldset is the wrong semantics
+        <div className="mt-3 flex gap-1.5" role="group" aria-label="Grid range">
           {ranges.map(({ label, days }) => (
             <button
               key={label}
               type="button"
               aria-pressed={days === rangeDays}
               onClick={() => setRangeDays(days)}
-              className={`focus-ring cursor-pointer rounded-lg px-2.5 py-1 font-mono text-[10px] ${
+              className={`focus-ring cursor-pointer rounded-lg px-3 py-2 font-mono text-[10px] ${
                 days === rangeDays ? 'bg-elevated text-tx1' : 'text-tx3 hover:text-tx1'
               }`}
             >

@@ -1,27 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export const NARROW_QUERY = '(max-width: 639px)';
 
 /**
  * Tracks whether the viewport is narrow enough to warrant the calendar layout.
  *
- * Returns `false` during SSR and on the first client paint, then syncs in an
- * effect. Rendering the wide layout for one frame is a deliberate trade: the
- * alternative — returning `null` until mounted — blanks the card and produces a
- * worse layout shift.
+ * Every real caller of `ContributionGrid` gates rendering behind Dexie's
+ * `useLiveQuery` and returns `null` until data resolves, so this hook only ever
+ * mounts client-side, after `matchMedia` is already answerable. `useSyncExternalStore`
+ * reads the real value on the first render — no flash, no throwaway `WideGrid` mount.
+ * `getServerSnapshot` returns `false` purely to satisfy SSR/hydration; it is never
+ * what a real page load paints.
  */
+function subscribe(callback: () => void): () => void {
+  const mql = window.matchMedia(NARROW_QUERY);
+  mql.addEventListener('change', callback);
+  return () => mql.removeEventListener('change', callback);
+}
+
+function getSnapshot(): boolean {
+  return window.matchMedia(NARROW_QUERY).matches;
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
+
 export function useIsNarrow(): boolean {
-  const [isNarrow, setIsNarrow] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia(NARROW_QUERY);
-    const sync = () => setIsNarrow(mql.matches);
-    sync();
-    mql.addEventListener('change', sync);
-    return () => mql.removeEventListener('change', sync);
-  }, []);
-
-  return isNarrow;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
