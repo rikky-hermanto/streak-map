@@ -1,5 +1,8 @@
+'use client';
+
 import type { DateKey } from '@streak-map/core';
 import { dateFromDateKey, perHabitLevel } from '@streak-map/core';
+import { useState } from 'react';
 import { MONTH_NAMES, tileLabel } from './labels';
 import { Tile } from './Tile';
 import type { GridLayoutProps } from './WideGrid';
@@ -9,6 +12,12 @@ import { buildGridWeeks } from './weeks';
 export const MOBILE_WINDOW_DAYS = 84;
 
 const WEEKDAY_HEADERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+
+const RANGES = [
+  { label: '12 weeks', days: MOBILE_WINDOW_DAYS },
+  { label: '6 months', days: 182 },
+  { label: '1 year', days: 365 },
+] as const;
 
 function monthHeading(key: DateKey): string {
   const date = dateFromDateKey(key);
@@ -21,10 +30,9 @@ function monthHeading(key: DateKey): string {
  * when 53 week-columns share the same width.
  */
 export function CalendarGrid({ counts, target, color, windowDays, today }: GridLayoutProps) {
-  const { firstDay, lastDay, weekStartKeys, columns } = buildGridWeeks(
-    today,
-    Math.min(windowDays, MOBILE_WINDOW_DAYS),
-  );
+  const [rangeDays, setRangeDays] = useState(Math.min(windowDays, MOBILE_WINDOW_DAYS));
+  const ranges = RANGES.filter((r) => r.days <= windowDays);
+  const { firstDay, lastDay, weekStartKeys, columns } = buildGridWeeks(today, rangeDays);
 
   let lastMonth = -1;
 
@@ -70,6 +78,23 @@ export function CalendarGrid({ counts, target, color, windowDays, today }: GridL
           </div>
         );
       })}
+      {ranges.length > 1 && (
+        <div className="mt-3 flex gap-1.5">
+          {ranges.map(({ label, days }) => (
+            <button
+              key={label}
+              type="button"
+              aria-pressed={days === rangeDays}
+              onClick={() => setRangeDays(days)}
+              className={`focus-ring cursor-pointer rounded-lg px-2.5 py-1 font-mono text-[10px] ${
+                days === rangeDays ? 'bg-elevated text-tx1' : 'text-tx3 hover:text-tx1'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

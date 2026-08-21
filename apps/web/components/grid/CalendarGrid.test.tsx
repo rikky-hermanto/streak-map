@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CalendarGrid } from './CalendarGrid';
 
@@ -60,5 +61,45 @@ describe('CalendarGrid', () => {
     );
     // 84 days ending on a Thursday spans 13 Monday-start weeks.
     expect(container.querySelectorAll('[data-week]')).toHaveLength(13);
+  });
+});
+
+describe('CalendarGrid range control', () => {
+  it('offers longer ranges when the requested window exceeds the mobile default', () => {
+    render(
+      <CalendarGrid counts={{}} target={1} color="#4B8A5E" windowDays={365} today="2026-08-20" />,
+    );
+    expect(screen.getByRole('button', { name: '12 weeks' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '6 months' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '1 year' })).toBeInTheDocument();
+  });
+
+  it('hides the control when the caller asked for a shorter window than the default', () => {
+    render(
+      <CalendarGrid counts={{}} target={1} color="#4B8A5E" windowDays={14} today="2026-08-20" />,
+    );
+    expect(screen.queryByRole('button', { name: '12 weeks' })).not.toBeInTheDocument();
+  });
+
+  it('expands the rendered window when a longer range is chosen', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <CalendarGrid counts={{}} target={1} color="#4B8A5E" windowDays={365} today="2026-08-20" />,
+    );
+    expect(container.querySelectorAll('[data-week]')).toHaveLength(13);
+    await user.click(screen.getByRole('button', { name: '6 months' }));
+    // 182 days ending 2026-08-20 spans 27 Monday-start weeks.
+    expect(container.querySelectorAll('[data-week]')).toHaveLength(27);
+  });
+
+  it('marks the active range for assistive tech', () => {
+    render(
+      <CalendarGrid counts={{}} target={1} color="#4B8A5E" windowDays={365} today="2026-08-20" />,
+    );
+    expect(screen.getByRole('button', { name: '12 weeks' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', { name: '1 year' })).toHaveAttribute('aria-pressed', 'false');
   });
 });

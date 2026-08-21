@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ContributionGrid } from './ContributionGrid';
 
 describe('ContributionGrid', () => {
@@ -44,5 +44,69 @@ describe('ContributionGrid', () => {
     expect(screen.getByText('Wed')).toBeInTheDocument();
     expect(screen.getByText('Fri')).toBeInTheDocument();
     expect(screen.getByLabelText('No check-ins on Aug 19, 2026')).toBeInTheDocument();
+  });
+});
+
+function stubNarrow(matches: boolean) {
+  vi.spyOn(window, 'matchMedia').mockReturnValue({
+    matches,
+    media: '',
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  } as unknown as MediaQueryList);
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe('ContributionGrid layout switching', () => {
+  it('renders the wide layout on a wide viewport', () => {
+    stubNarrow(false);
+    const { container } = render(
+      <ContributionGrid
+        counts={{}}
+        target={1}
+        color="#4B8A5E"
+        windowDays={14}
+        today="2026-08-20"
+      />,
+    );
+    expect(container.querySelectorAll('[data-week]')).toHaveLength(0);
+    expect(screen.queryByText('Tue')).not.toBeInTheDocument();
+  });
+
+  it('renders the calendar layout on a narrow viewport', () => {
+    stubNarrow(true);
+    const { container } = render(
+      <ContributionGrid
+        counts={{}}
+        target={1}
+        color="#4B8A5E"
+        windowDays={14}
+        today="2026-08-20"
+      />,
+    );
+    expect(container.querySelectorAll('[data-week]').length).toBeGreaterThan(0);
+    expect(screen.getByText('Tue')).toBeInTheDocument();
+  });
+
+  it('shows the legend in both layouts', () => {
+    stubNarrow(true);
+    render(
+      <ContributionGrid
+        counts={{}}
+        target={1}
+        color="#4B8A5E"
+        windowDays={14}
+        today="2026-08-20"
+      />,
+    );
+    expect(screen.getByText('Less')).toBeInTheDocument();
+    expect(screen.getByText('More')).toBeInTheDocument();
   });
 });
