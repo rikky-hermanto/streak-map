@@ -1,15 +1,11 @@
 import type { DateKey } from '@streak-map/core';
-import {
-  dateFromDateKey,
-  enumerateWeekStartKeys,
-  perHabitLevel,
-  todayKey,
-  trailingWindowKeys,
-} from '@streak-map/core';
+import { perHabitLevel, todayKey } from '@streak-map/core';
 import { Legend } from './Legend';
+import { tileLabel } from './labels';
 import { MonthLabels } from './MonthLabels';
 import { Tile } from './Tile';
 import { WeekdayLabels } from './WeekdayLabels';
+import { buildGridWeeks } from './weeks';
 
 const WINDOW_DAYS = 365;
 
@@ -21,16 +17,6 @@ interface ContributionGridProps {
   today?: DateKey;
 }
 
-function formatDisplayDate(key: DateKey): string {
-  const date = dateFromDateKey(key);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function tileLabel(date: DateKey, count: number): string {
-  if (count === 0) return `No check-ins on ${formatDisplayDate(date)}`;
-  return `${count} check-in${count === 1 ? '' : 's'} on ${formatDisplayDate(date)}`;
-}
-
 export function ContributionGrid({
   counts,
   target,
@@ -38,20 +24,7 @@ export function ContributionGrid({
   windowDays = WINDOW_DAYS,
   today = todayKey(),
 }: ContributionGridProps) {
-  const days = trailingWindowKeys(today, windowDays);
-  const firstDay = days[0];
-  const weekStartKeys = enumerateWeekStartKeys(firstDay, today);
-
-  const columns: DateKey[][] = weekStartKeys.map((weekStart) => {
-    const week: DateKey[] = [];
-    const start = dateFromDateKey(weekStart);
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      week.push(key);
-    }
-    return week;
-  });
+  const { firstDay, lastDay, weekStartKeys, columns } = buildGridWeeks(today, windowDays);
 
   return (
     <div>
@@ -61,18 +34,17 @@ export function ContributionGrid({
         {columns.map((week, weekIndex) => (
           <div key={weekStartKeys[weekIndex]} className="flex min-w-0 flex-1 flex-col gap-[3px]">
             {week.map((date) => {
-              const inWindow = date >= firstDay && date <= today;
+              const inWindow = date >= firstDay && date <= lastDay;
               if (!inWindow) return <div key={date} className="aspect-square w-full" />;
               const count = counts[date] ?? 0;
-              const level = perHabitLevel(count, target);
               return (
                 <Tile
                   key={date}
                   date={date}
                   count={count}
-                  level={level}
+                  level={perHabitLevel(count, target)}
                   color={color}
-                  isToday={date === today}
+                  isToday={date === lastDay}
                   label={tileLabel(date, count)}
                 />
               );

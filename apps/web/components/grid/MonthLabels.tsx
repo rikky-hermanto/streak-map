@@ -1,19 +1,5 @@
 import { dateFromDateKey } from '@streak-map/core';
-
-const MONTH_NAMES = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+import { MONTH_NAMES } from './labels';
 
 interface MonthLabelsProps {
   weekStartKeys: string[];
