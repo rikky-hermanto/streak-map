@@ -33,6 +33,7 @@ export function CalendarGrid({ counts, target, color, windowDays, today }: GridL
   const [rangeDays, setRangeDays] = useState(Math.min(windowDays, MOBILE_WINDOW_DAYS));
   const ranges = RANGES.filter((r) => r.days <= windowDays);
   const { firstDay, lastDay, weekStartKeys, columns } = buildGridWeeks(today, rangeDays);
+  const maxCount = Math.max(target, ...Object.values(counts));
 
   let lastMonth = -1;
 
@@ -67,7 +68,7 @@ export function CalendarGrid({ counts, target, color, windowDays, today }: GridL
                     key={date}
                     date={date}
                     count={count}
-                    level={perHabitLevel(count, target)}
+                    level={perHabitLevel(count, maxCount)}
                     color={color}
                     isToday={date === lastDay}
                     label={tileLabel(date, count)}

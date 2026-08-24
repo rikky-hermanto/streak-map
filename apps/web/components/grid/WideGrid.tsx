@@ -17,6 +17,7 @@ export interface GridLayoutProps {
 /** The year-at-a-glance layout: one column per week, days running down each column. */
 export function WideGrid({ counts, target, color, windowDays, today }: GridLayoutProps) {
   const { firstDay, lastDay, weekStartKeys, columns } = buildGridWeeks(today, windowDays);
+  const maxCount = Math.max(target, ...Object.values(counts));
 
   return (
     <div>
@@ -34,7 +35,7 @@ export function WideGrid({ counts, target, color, windowDays, today }: GridLayou
                   key={date}
                   date={date}
                   count={count}
-                  level={perHabitLevel(count, target)}
+                  level={perHabitLevel(count, maxCount)}
                   color={color}
                   isToday={date === lastDay}
                   label={tileLabel(date, count)}
