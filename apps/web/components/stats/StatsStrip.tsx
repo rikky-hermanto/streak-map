@@ -34,13 +34,18 @@ export function StatsStrip({ stats }: StatsStripProps) {
     },
   ];
 
+  const active = items.find((item) => item.label === hovered);
+
   return (
-    <div className="mt-3.5 flex flex-wrap gap-5 border-t border-border pt-3.5">
+    // The hint bubble is positioned against the strip, not the individual
+    // stat: a stat sitting near the right edge of a narrow card has no room
+    // to grow, whereas the strip always spans the card's full width.
+    <div className="relative mt-3.5 flex flex-wrap gap-5 border-t border-border pt-3.5">
       {items.map((item) => (
         <button
           key={item.label}
           type="button"
-          className="relative cursor-help text-left"
+          className="cursor-help text-left"
           aria-label={`${item.label}: ${item.hint}`}
           onMouseEnter={() => setHovered(item.label)}
           onMouseLeave={() => setHovered(null)}
@@ -49,13 +54,9 @@ export function StatsStrip({ stats }: StatsStripProps) {
         >
           <div className="text-[11px] text-tx3">{item.label}</div>
           <div className="font-mono text-[17px] font-semibold text-tx1">{item.value}</div>
-          <Tooltip
-            text={item.hint}
-            visible={hovered === item.label}
-            className="left-0 max-w-[240px] translate-x-0 whitespace-normal"
-          />
         </button>
       ))}
+      <Tooltip text={active?.hint ?? ''} visible={active !== undefined} wrap />
     </div>
   );
 }
